@@ -1,0 +1,82 @@
+{
+    "name": "screenshot-tool",
+    "version": "1.0.0",
+    "description": "Cross-platform desktop screenshot and recording tool",
+    "main": "src/main/main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "concurrently \"npm run dev:react\" \"wait-on http://localhost:3000 && electron .\"",
+        "dev:react": "vite --host",
+        "build": "vite build",
+        "build:electron": "electron-builder",
+        "dist": "npm run build && electron-builder",
+        "pack": "electron-builder --dir",
+        "postinstall": "electron-builder install-app-deps",
+        "clean": "rm -rf node_modules package-lock.json && npm install",
+        "lint": "echo 'Linting placeholder'"
+    },
+    "keywords": [
+        "screenshot",
+        "screen-recording",
+        "electron",
+        "react",
+        "desktop-app"
+    ],
+    "author": "emranio",
+    "license": "MIT",
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.3.1",
+        "concurrently": "^8.2.2",
+        "electron": "^31.3.1",
+        "electron-builder": "^25.0.5",
+        "sass": "^1.77.8",
+        "vite": "^5.4.0",
+        "wait-on": "^8.0.1"
+    },
+    "dependencies": {
+        "basic-ftp": "^5.0.5",
+        "electron-store": "^10.0.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "zustand": "^4.5.5",
+        "tailwindcss": "^3.4.10",
+        "autoprefixer": "^10.4.20",
+        "postcss": "^8.4.41"
+    },
+    "build": {
+        "appId": "com.emranio.screenshot-tool",
+        "productName": "Screenshot Tool",
+        "directories": {
+            "buildResources": "assets",
+            "output": "dist"
+        },
+        "files": [
+            "build/**/*",
+            "src/main/**/*",
+            "node_modules/**/*",
+            "package.json"
+        ],
+        "mac": {
+            "icon": "assets/icon.icns",
+            "category": "public.app-category.productivity"
+        },
+        "win": {
+            "icon": "assets/icon.ico",
+            "target": "nsis"
+        },
+        "linux": {
+            "icon": "assets/icon.png",
+            "target": "AppImage"
+        }
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "overrides": {
+        "glob": "^11.0.0",
+        "inflight": "npm:@isaacs/inflight@^1.0.6"
+    },
+    "homepage": "./",
+    "type": "module"
+}
