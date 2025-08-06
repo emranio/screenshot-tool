@@ -46,15 +46,19 @@ export class TrayManager {
     }
 
     getAppIcon() {
-        // Create a simple icon for now
-        const canvas = new OffscreenCanvas(16, 16)
-        const ctx = canvas.getContext('2d')
-        ctx.fillStyle = '#3b82f6'
-        ctx.fillRect(0, 0, 16, 16)
-        ctx.fillStyle = '#ffffff'
-        ctx.fillRect(2, 2, 12, 12)
+        // Create a simple colored icon using nativeImage
+        const size = 16
+        const buffer = Buffer.alloc(size * size * 4) // RGBA
 
-        return nativeImage.createFromBuffer(Buffer.from(canvas.toDataURL().split(',')[1], 'base64'))
+        // Fill with blue color
+        for (let i = 0; i < buffer.length; i += 4) {
+            buffer[i] = 59     // R
+            buffer[i + 1] = 130 // G
+            buffer[i + 2] = 246 // B
+            buffer[i + 3] = 255 // A
+        }
+
+        return nativeImage.createFromBuffer(buffer, { width: size, height: size })
     }
 
     updateMenu() {

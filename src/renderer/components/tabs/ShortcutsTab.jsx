@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSettings } from '../../store/settings-store'
+import { useSettings } from '../../store/settings-provider.jsx'
 
 const ShortcutsTab = () => {
   const { settings, updateSettings } = useSettings()

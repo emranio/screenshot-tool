@@ -13,9 +13,19 @@ const GeneralTab = () => {
   }
 
   const handleSelectLocalPath = async () => {
-    // This would open a directory picker dialog
-    // For now, just show an alert
-    alert('Directory picker would open here')
+    try {
+      if (window.electronAPI && window.electronAPI.selectDirectory) {
+        const selectedPath = await window.electronAPI.selectDirectory()
+        if (selectedPath) {
+          updateSettings({ localSavePath: selectedPath })
+        }
+      } else {
+        // Fallback for development environment
+        alert('Directory picker is only available in the Electron app. For development, you can manually enter a path.')
+      }
+    } catch (error) {
+      console.error('Failed to select directory:', error)
+    }
   }
 
   const handleImageFormatChange = (e) => {

@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron'
+import { ipcMain, dialog } from 'electron'
 
 export class IPCManager {
     constructor() {
@@ -6,13 +6,17 @@ export class IPCManager {
         this.ftpManager = null
         this.captureManager = null
         this.shortcutManager = null
+        this.windowManager = null
+        this.app = null
     }
 
-    initialize(settingsManager, ftpManager, captureManager, shortcutManager) {
+    initialize(settingsManager, ftpManager, captureManager, shortcutManager, windowManager = null, app = null) {
         this.settingsManager = settingsManager
         this.ftpManager = ftpManager
         this.captureManager = captureManager
         this.shortcutManager = shortcutManager
+        this.windowManager = windowManager
+        this.app = app
         this.setupIpcHandlers()
     }
 
@@ -31,14 +35,40 @@ export class IPCManager {
             return await this.ftpManager.testConnection(ftpSettings)
         })
 
+        ipcMain.handle('select-directory', async () => {
+            const result = await dialog.showOpenDialog({
+                properties: ['openDirectory'],
+                title: 'Select Directory for Screenshots'
+            })
+
+            if (!result.canceled && result.filePaths.length > 0) {
+                return result.filePaths[0]
+            }
+            return null
+        })
+
         ipcMain.handle('overlay-selection-complete', async (event, selection) => {
-            // This will be handled by the app instance
+            // Process the selection and hide overlay
             const result = await this.captureManager.processSelection(selection)
+
+            // Hide overlay window
+            if (this.windowManager) {
+                this.windowManager.hideOverlayWindow()
+            }
+
+            // Process the capture (save/upload)
+            if (this.app && this.app.processCapture) {
+                await this.app.processCapture(result)
+            }
+
             return result
         })
 
         ipcMain.handle('overlay-cancel', () => {
-            // This will be handled by the app instance
+            // Hide overlay window
+            if (this.windowManager) {
+                this.windowManager.hideOverlayWindow()
+            }
             return true
         })
 

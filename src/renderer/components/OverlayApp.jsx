@@ -19,6 +19,8 @@ const OverlayApp = () => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         handleCancel()
+      } else if (e.key === 'Enter' && selectionRect.width > 10 && selectionRect.height > 10) {
+        handleSelectionComplete(getSelectionRect())
       }
     }
 
@@ -193,24 +195,48 @@ const OverlayApp = () => {
       {/* Selection Info */}
       {(isSelecting || selectionRect.width > 0) && (
         <div 
-          className="absolute bg-black bg-opacity-75 text-white px-3 py-2 rounded text-sm pointer-events-none"
+          className="absolute bg-black bg-opacity-80 text-white px-3 py-2 rounded-md text-sm pointer-events-none z-10 font-mono border border-gray-600"
           style={{
-            left: Math.max(10, Math.min(currentMouse.x + 10, window.innerWidth - 200)),
-            top: Math.max(10, currentMouse.y - 40)
+            left: Math.max(10, Math.min(currentMouse.x + 15, window.innerWidth - 200)),
+            top: Math.max(10, currentMouse.y - 45)
           }}
         >
-          {Math.round(selectionRect.width)} × {Math.round(selectionRect.height)}
+          <div className="flex items-center space-x-2">
+            <span className="text-blue-300">
+              {overlayData.mode === 'video' ? '📹' : '📷'}
+            </span>
+            <span className="text-white">
+              {Math.round(selectionRect.width)} × {Math.round(selectionRect.height)}
+            </span>
+          </div>
+          {overlayData.mode === 'video' && (
+            <div className="text-xs text-red-300 mt-1">
+              Recording Area
+            </div>
+          )}
         </div>
       )}
       
       {/* Instructions */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded pointer-events-none">
+      <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-85 text-white px-6 py-3 rounded-lg pointer-events-none border border-gray-600">
         <div className="text-center">
-          <div className="text-sm font-medium">
-            {overlayData.mode === 'video' ? 'Select area to record' : 'Select area to capture'}
+          <div className="text-sm font-semibold flex items-center justify-center space-x-2">
+            <span className="text-lg">
+              {overlayData.mode === 'video' ? '🎥' : '📸'}
+            </span>
+            <span>
+              {overlayData.mode === 'video' 
+                ? 'Select area to record' 
+                : overlayData.mode === 'screenshotWithEditor'
+                  ? 'Select area to capture and edit'
+                  : 'Select area to capture'
+              }
+            </span>
           </div>
-          <div className="text-xs text-gray-300 mt-1">
-            Drag to select • ESC to cancel
+          <div className="text-xs text-gray-300 mt-2 flex items-center justify-center space-x-4">
+            <span>🖱️ Drag to select</span>
+            <span>⏎ Enter to confirm</span>
+            <span>⎋ ESC to cancel</span>
           </div>
         </div>
       </div>

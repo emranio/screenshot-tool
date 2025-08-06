@@ -2,10 +2,14 @@ import { desktopCapturer } from 'electron'
 import { writeFile, mkdir } from 'fs/promises'
 import { join, dirname } from 'path'
 import { tmpdir } from 'os'
+import sharp from 'sharp'
 
 export class CaptureManager {
     constructor() {
         this.tempDir = join(tmpdir(), 'screenshot-tool')
+        this.isRecording = false
+        this.mediaRecorder = null
+        this.recordedChunks = []
         this.ensureTempDir()
     }
 
@@ -58,12 +62,12 @@ export class CaptureManager {
         const { screenshot, bounds, mode } = selection
         const screenshotBuffer = Buffer.from(screenshot, 'base64')
 
-        // For now, we'll use Canvas API to crop the image
-        // In a production app, you might want to use a more robust image processing library
+        // Crop the image based on selection bounds
+        const croppedImageBuffer = await this.cropImage(screenshotBuffer, bounds)
         const filename = this.generateFilename('screenshot', 'png')
 
         const result = {
-            buffer: screenshotBuffer, // For now, return the full screenshot
+            buffer: croppedImageBuffer,
             filename,
             dimensions: {
                 width: Math.round(bounds.width),
@@ -72,10 +76,33 @@ export class CaptureManager {
         }
 
         if (mode === 'screenshotWithEditor') {
-            return await this.openEditor(screenshotBuffer, result)
+            return await this.openEditor(croppedImageBuffer, result)
         }
 
         return result
+    }
+
+    async cropImage(imageBuffer, bounds) {
+        try {
+            const { x, y, width, height } = bounds
+
+            // Use sharp to crop the image
+            const croppedBuffer = await sharp(imageBuffer)
+                .extract({
+                    left: Math.round(x),
+                    top: Math.round(y),
+                    width: Math.round(width),
+                    height: Math.round(height)
+                })
+                .png()
+                .toBuffer()
+
+            return croppedBuffer
+        } catch (error) {
+            console.error('Failed to crop image:', error)
+            // Return original buffer if cropping fails
+            return imageBuffer
+        }
     }
 
     async openEditor(imageBuffer, existingResult = null) {
@@ -115,11 +142,52 @@ export class CaptureManager {
     }
 
     async startFullscreenRecording(display) {
-        // This would implement screen recording functionality
-        // For now, just log the action
-        console.log('Starting fullscreen recording for display:', display.id)
+        if (this.isRecording) {
+            console.warn('Recording already in progress')
+            return
+        }
 
-        // Implementation would use MediaRecorder API or similar
-        // to capture screen content as video
+        console.log('Starting fullscreen recording for display:', display.id)
+        this.isRecording = true
+
+        // This would implement screen recording functionality
+        // For now, simulate recording and return after a delay
+        setTimeout(() => {
+            this.stopRecording()
+        }, 10000) // Stop after 10 seconds for demo
+    }
+
+    async startSelectionRecording(bounds, display) {
+        if (this.isRecording) {
+            console.warn('Recording already in progress')
+            return
+        }
+
+        console.log('Starting selection recording:', { bounds, display: display.id })
+        this.isRecording = true
+
+        // Implementation would use MediaRecorder with screen capture
+        // For now, simulate recording
+        setTimeout(() => {
+            this.stopRecording()
+        }, 10000) // Stop after 10 seconds for demo
+    }
+
+    stopRecording() {
+        if (!this.isRecording) {
+            console.warn('No recording in progress')
+            return null
+        }
+
+        this.isRecording = false
+        console.log('Recording stopped')
+
+        // Return a mock video result for now
+        const filename = this.generateFilename('recording', 'mp4')
+        return {
+            buffer: Buffer.from('mock-video-data'), // This would be actual video data
+            filename,
+            dimensions: { width: 1920, height: 1080 }
+        }
     }
 }

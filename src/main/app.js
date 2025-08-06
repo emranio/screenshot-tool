@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, ipcMain, screen, clipboard, Menu, Tray, nativeImage } from 'electron'
+import { app, BrowserWindow, globalShortcut, ipcMain, screen, clipboard, Menu, Tray, nativeImage, Notification } from 'electron'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { CaptureManager } from './managers/capture-manager.js'
@@ -44,7 +44,14 @@ export class ScreenshotApp {
         this.windowManager.initialize(this.isDev)
         this.trayManager.initialize(this.windowManager, this)
         this.shortcutManager.initialize(this.settingsManager, this)
-        this.ipcManager.initialize(this.settingsManager, this.ftpManager, this.captureManager, this.shortcutManager)
+        this.ipcManager.initialize(
+            this.settingsManager,
+            this.ftpManager,
+            this.captureManager,
+            this.shortcutManager,
+            this.windowManager,
+            this
+        )
     }
 
     setupAppEvents() {
@@ -111,11 +118,16 @@ export class ScreenshotApp {
     async processCapture(result) {
         const settings = this.settingsManager.getSettings()
         let finalUrl = null
+        let localPath = null
 
         // Save locally if configured
         if (settings.localSavePath) {
-            const localPath = await this.captureManager.saveLocally(result.buffer, settings.localSavePath)
-            finalUrl = localPath
+            try {
+                localPath = await this.captureManager.saveLocally(result.buffer, settings.localSavePath)
+                finalUrl = localPath
+            } catch (error) {
+                console.error('Failed to save locally:', error)
+            }
         }
 
         // Upload via FTP if configured
@@ -133,7 +145,38 @@ export class ScreenshotApp {
             clipboard.writeText(finalUrl)
         }
 
+        // Show notification if enabled
+        if (settings.ui?.showNotifications) {
+            this.showNotification(result, finalUrl, localPath)
+        }
+
         return finalUrl
+    }
+
+    showNotification(result, finalUrl, localPath) {
+        if (!Notification.isSupported()) return
+
+        const settings = this.settingsManager.getSettings()
+        let title = 'Screenshot Captured'
+        let body = ''
+
+        if (finalUrl) {
+            if (finalUrl.startsWith('http')) {
+                body = 'Uploaded and URL copied to clipboard'
+            } else {
+                body = `Saved to ${localPath ? 'local folder' : 'clipboard'}`
+            }
+        } else {
+            body = 'Capture completed'
+        }
+
+        const notification = new Notification({
+            title,
+            body,
+            silent: false
+        })
+
+        notification.show()
     }
 
     showMainWindow() {

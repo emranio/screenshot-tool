@@ -8,6 +8,9 @@ const electronAPI = {
     // FTP
     testFtpConnection: (ftpSettings) => ipcRenderer.invoke('test-ftp-connection', ftpSettings),
 
+    // File system
+    selectDirectory: () => ipcRenderer.invoke('select-directory'),
+
     // App control
     minimizeToTray: () => ipcRenderer.invoke('minimize-to-tray'),
 
