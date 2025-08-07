@@ -1,0 +1,65 @@
+@use '../mixins';
+
+// Settings specific styles
+.settings-page {
+    &__header {
+        margin-bottom: var(--spacing-xl);
+    }
+
+    &__title {
+        font-size: var(--font-size-xxl);
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    &__subtitle {
+        color: var(--text-secondary);
+        font-size: var(--font-size-md);
+    }
+}
+
+.settings-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.test-connection {
+    &__button {
+        @include mixins.button-hover;
+    }
+
+    &__status {
+        margin-top: var(--spacing-sm);
+        padding: var(--spacing-sm);
+        border-radius: var(--radius-sm);
+        font-size: var(--font-size-sm);
+
+        &--success {
+            background: rgba(81, 207, 102, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(81, 207, 102, 0.3);
+        }
+
+        &--error {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        &--loading {
+            background: rgba(51, 154, 240, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(51, 154, 240, 0.3);
+        }
+    }
+}
+
+.file-picker {
+    &__input {
+        cursor: pointer;
+    }
+
+    &__button {
+        @include mixins.button-hover;
+    }
+}

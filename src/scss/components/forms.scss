@@ -1,0 +1,152 @@
+@use '../mixins';
+
+// Form styles
+.form-section {
+    @include mixins.form-section;
+
+    &__header {
+        @include mixins.flex-between;
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    &__title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    &__description {
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+    }
+
+    &__toggle {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        .mantine-Switch-root {
+            cursor: pointer !important;
+        }
+
+        .mantine-Switch-input {
+            cursor: pointer !important;
+        }
+
+        .mantine-Switch-track {
+            cursor: pointer !important;
+        }
+
+        .mantine-Switch-thumb {
+            cursor: pointer !important;
+        }
+
+        .mantine-Switch-label {
+            cursor: pointer !important;
+        }
+
+        // Target all Switch components
+        [data-mantine-component="Switch"] {
+            cursor: pointer !important;
+
+            * {
+                cursor: pointer !important;
+            }
+        }
+    }
+}
+
+.form-field {
+    margin-bottom: var(--spacing-lg);
+
+    &__label {
+        display: block;
+        margin-bottom: var(--spacing-xs);
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    &__description {
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+    }
+
+    &__error {
+        color: var(--error-color);
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+    }
+
+    &__success {
+        color: var(--success-color);
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+    }
+
+    // Switch cursor pointer styles for switches inside form fields
+    .mantine-Switch-root {
+        cursor: pointer !important;
+    }
+
+    .mantine-Switch-input {
+        cursor: pointer !important;
+    }
+
+    .mantine-Switch-track {
+        cursor: pointer !important;
+    }
+
+    .mantine-Switch-thumb {
+        cursor: pointer !important;
+    }
+
+    .mantine-Switch-label {
+        cursor: pointer !important;
+    }
+
+    // Target all Switch components within form fields
+    [data-mantine-component="Switch"] {
+        cursor: pointer !important;
+
+        * {
+            cursor: pointer !important;
+        }
+    }
+}
+
+.hotkey-config {
+    &__grid {
+        display: grid;
+        gap: var(--spacing-md);
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--spacing-md);
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+
+        &--conflict {
+            border-color: var(--error-color);
+            background: rgba(255, 107, 107, 0.05);
+        }
+    }
+
+    &__label {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    &__description {
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+        margin-top: var(--spacing-xs);
+    }
+}

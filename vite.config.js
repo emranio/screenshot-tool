@@ -1,28 +1,33 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [react()],
     base: './',
-    build: {
-        outDir: 'build',
-        assetsDir: 'assets'
-    },
-    server: {
-        port: 3000
-    },
-    resolve: {
-        alias: {
-            '@': resolve(__dirname, './src')
-        }
-    },
     css: {
         preprocessorOptions: {
             scss: {
-                api: 'modern-compiler',
-                additionalData: `@use "@/styles/variables.scss" as *;`
-            }
-        }
-    }
-})
+                api: 'modern-compiler', // Use the modern Sass API
+            },
+        },
+    },
+    build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom'],
+                    mantine: ['@mantine/core', '@mantine/hooks', '@mantine/notifications'],
+                },
+            },
+        },
+    },
+    server: {
+        port: 3000,
+        host: true,
+    },
+    optimizeDeps: {
+        include: ['react', 'react-dom', '@mantine/core', '@mantine/hooks'],
+    },
+});
